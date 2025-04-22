@@ -3,7 +3,10 @@
 #include <thread>
 #include <SDL_keycode.h>
 
-/* TODO:
+/*
+   TODO:
+
+   DONE:
 	- use Uint32 for pixels and SDL_MapRGBA for colors
 */
 
@@ -22,8 +25,15 @@ int main(int argc, char* argv[]) {
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(window, &width, &height);
-	SDL_Surface* drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR8888);   /* ABGR bc it's in reverse lol */
-	uint8_t* pixels = static_cast<uint8_t*>(drawingSurface->pixels);
+	SDL_Surface* drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
+	Uint32* pixels = (Uint32*)drawingSurface->pixels;
+
+	/* Colors */
+	Uint32 black = SDL_MapRGBA(drawingSurface->format, 0, 0, 0, 255);
+	Uint32 white = SDL_MapRGBA(drawingSurface->format, 255, 255, 255, 255);
+	Uint32 red = SDL_MapRGBA(drawingSurface->format, 255, 0, 0, 255);
+	Uint32 green = SDL_MapRGBA(drawingSurface->format, 0, 255, 0, 255);
+	Uint32 blue = SDL_MapRGBA(drawingSurface->format, 0, 0, 255, 255);
 
 	/* Game loop */
 	while (running) {
@@ -42,8 +52,8 @@ int main(int argc, char* argv[]) {
 					windowSurface = SDL_GetWindowSurface(window);
 					SDL_GetWindowSize(window, &width, &height);
 					SDL_FreeSurface(drawingSurface);
-					drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);   /* And now look it will change color lol */
-					pixels = static_cast<uint8_t*>(drawingSurface->pixels);
+					drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
+					pixels = (Uint32*)drawingSurface->pixels;
 				}
 			}
 			else if (event.type == SDL_QUIT) {   /* Stop game loop if window was quited */
@@ -53,18 +63,15 @@ int main(int argc, char* argv[]) {
 
 		/* Drawing */
 		SDL_LockSurface(drawingSurface);
-		pixels = static_cast<uint8_t*>(drawingSurface->pixels);
+		pixels = (Uint32*)(drawingSurface->pixels);
 		for (int i = 0; i < 100; i++) {
 			int targetHeight = height / 2 - 50 + i;
 			for (int j = 0; j < 100; j++) {
 				int targetWidth = width / 2 - 50 + j;
-				int targetPixel = targetHeight * drawingSurface->pitch + targetWidth * 4;
+				int targetPixel = targetHeight * (drawingSurface->pitch / 4) + targetWidth;
 				for (int k = 0; k < 4; k++)
 				{
-					pixels[targetPixel + 0] = (uint8_t)255;   /* Why tf is it ABGR not RGBA */
-					pixels[targetPixel + 1] = (uint8_t)255;   /* It's bc SDL is writing pixels as Uint32 (full 4 bytes) and they're endian in memory */
-					pixels[targetPixel + 2] = (uint8_t)0;
-					pixels[targetPixel + 3] = (uint8_t)255;
+					pixels[targetPixel] = white;
 				}
 			}
 		}
