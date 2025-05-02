@@ -5,10 +5,18 @@
 
 /*
    TODO:
-
+	- scale function
    DONE:
-	- use Uint32 for pixels and SDL_MapRGBA for colors
+	- fill function
+	- draw square function
 */
+
+/* Function declarations */
+void scaleSurface(SDL_Surface* surfaceA, SDL_Surface* surfaceB, int ratio);
+
+void fill(Uint32* pixels, int width, int height, Uint32 color);
+
+void drawSquare(Uint32* pixels, int width, int height, int squareSize, Uint32 color);
 
 int main(int argc, char* argv[]) {
 	/* SDL setup */
@@ -61,24 +69,20 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		/* Drawing */
+		/* Drawing start */
 		SDL_LockSurface(drawingSurface);
 		pixels = (Uint32*)(drawingSurface->pixels);
-		for (int i = 0; i < 100; i++) {
-			int targetHeight = height / 2 - 50 + i;
-			for (int j = 0; j < 100; j++) {
-				int targetWidth = width / 2 - 50 + j;
-				int targetPixel = targetHeight * (drawingSurface->pitch / 4) + targetWidth;
-				for (int k = 0; k < 4; k++)
-				{
-					pixels[targetPixel] = white;
-				}
-			}
-		}
+		
+		// Drawing functions
+		//	(if ever draws incorrectly, the reason might be using width instead of pitch / bpp)
+		fill(pixels, width, height, blue);
+		drawSquare(pixels, width, height, 100, white);
+
 		SDL_UnlockSurface(drawingSurface);
+		/* Drawing end */
 
 		/* Swapping buffers */
-		SDL_BlitSurface(drawingSurface, NULL, windowSurface, NULL);
+		scaleSurface(drawingSurface, windowSurface, 0);
 		SDL_UpdateWindowSurface(window);
 	}
 
