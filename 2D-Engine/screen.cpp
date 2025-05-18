@@ -15,11 +15,6 @@ void fill(Uint32* pixels, int width, int height, Uint32 color)
 	}
 }
 
-//void scaleSurface_old(SDL_Surface* source, SDL_Surface* destination, int ratio)
-//{
-//	SDL_BlitSurface(source, NULL, destination, NULL);
-//}
-
 void scaleSurface(SDL_Surface* source, SDL_Surface* destination, int ratio)
 {
 	SDL_LockSurface(source);

@@ -10,21 +10,22 @@
 
 /*
    TODO:
-	- draw square function with position
-	- draw out of bounds safety
+	- draw line function
+	- draw triangle function
 	- disable High DPI scaling (screen surface is 1536x864 not 1920x1080)
 	- optimize scaleSurface() function
    DONE:
-	- scale function (all 2 braincells worked with a piece of paper)
+	- draw square function with position
+	- draw out of bounds safety
 */
 
 /* Function declarations */
-//void scaleSurface_old(SDL_Surface* source, SDL_Surface* destination, int ratio);
 void scaleSurface(SDL_Surface* source, SDL_Surface* destination, int ratio);
 
 void fill(Uint32* pixels, int width, int height, Uint32 color);
 
-void drawSquare(Uint32* pixels, int width, int height, int squareSize, Uint32 color);
+//void drawSquare_old(Uint32* pixels, int width, int height, int squareSize, Uint32 color);
+void drawSquare(Uint32* pixels, int width, int height, int squareSize, int squareX, int squareY, Uint32 color);
 
 /* Main function */
 int main(int argc, char* argv[]) {
@@ -87,13 +88,13 @@ int main(int argc, char* argv[]) {
 		// Drawing functions
 		//	(if ever draws incorrectly, the reason might be using width instead of pitch)
 		fill(pixels, draw_width, draw_height, blue);
-		drawSquare(pixels, draw_width, draw_height, 100, red);
+		//drawSquare_old(pixels, draw_width, draw_height, 100, red);
+		drawSquare(pixels, draw_width, draw_height, 200, 400, 300, white);
 
 		SDL_UnlockSurface(drawingSurface);
 		/* Drawing end */
 
 		/* Swapping buffers */
-		//scaleSurface_old(drawingSurface, windowSurface, 1);
 		scaleSurface(drawingSurface, windowSurface, 0);
 		SDL_UpdateWindowSurface(window);
 	}
