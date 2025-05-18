@@ -3,45 +3,56 @@
 #include <thread>
 #include <SDL_keycode.h>
 
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+#define DRAW_WIDTH 800
+#define DRAW_HEIGHT 600
+
 /*
    TODO:
-	- scale function
+	- draw square function with position
+	- draw out of bounds safety
+	- disable High DPI scaling (screen surface is 1536x864 not 1920x1080)
+	- optimize scaleSurface() function
    DONE:
-	- fill function
-	- draw square function
+	- scale function (all 2 braincells worked with a piece of paper)
 */
 
 /* Function declarations */
-void scaleSurface(SDL_Surface* surfaceA, SDL_Surface* surfaceB, int ratio);
+//void scaleSurface_old(SDL_Surface* source, SDL_Surface* destination, int ratio);
+void scaleSurface(SDL_Surface* source, SDL_Surface* destination, int ratio);
 
 void fill(Uint32* pixels, int width, int height, Uint32 color);
 
 void drawSquare(Uint32* pixels, int width, int height, int squareSize, Uint32 color);
 
+/* Main function */
 int main(int argc, char* argv[]) {
 	/* SDL setup */
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		std::cout << "Unable to initialize SDL: " << SDL_GetError();
 		return 1;
 	}
-	SDL_Window* window = SDL_CreateWindow("SDL Playground - 2D Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_RESIZABLE);
+	SDL_Window* window = SDL_CreateWindow("SDL Playground - 2D Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN);
 	SDL_Surface* windowSurface = SDL_GetWindowSurface(window);
 
 	/* Game setup */
 	SDL_Event event;
 	bool running = true;
-	int width = 0;
-	int height = 0;
-	SDL_GetWindowSize(window, &width, &height);
-	SDL_Surface* drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
+	int screen_width = 0;
+	int screen_height = 0;
+	int draw_width = DRAW_WIDTH;
+	int draw_height = DRAW_HEIGHT;
+	SDL_GetWindowSize(window, &screen_width, &screen_height);
+	SDL_Surface* drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, draw_width, draw_height, 32, SDL_PIXELFORMAT_ARGB8888);   // not RGBA bc windowSurface is in ARGB
 	Uint32* pixels = (Uint32*)drawingSurface->pixels;
 
 	/* Colors */
-	Uint32 black = SDL_MapRGBA(drawingSurface->format, 0, 0, 0, 255);
-	Uint32 white = SDL_MapRGBA(drawingSurface->format, 255, 255, 255, 255);
-	Uint32 red = SDL_MapRGBA(drawingSurface->format, 255, 0, 0, 255);
-	Uint32 green = SDL_MapRGBA(drawingSurface->format, 0, 255, 0, 255);
-	Uint32 blue = SDL_MapRGBA(drawingSurface->format, 0, 0, 255, 255);
+	Uint32 black = SDL_MapRGB(drawingSurface->format, 0, 0, 0);
+	Uint32 white = SDL_MapRGB(drawingSurface->format, 255, 255, 255);
+	Uint32 red = SDL_MapRGB(drawingSurface->format, 255, 0, 0);
+	Uint32 green = SDL_MapRGB(drawingSurface->format, 0, 255, 0);
+	Uint32 blue = SDL_MapRGB(drawingSurface->format, 0, 0, 255);
 
 	/* Game loop */
 	while (running) {
@@ -58,10 +69,10 @@ int main(int argc, char* argv[]) {
 			else if (event.type == SDL_WINDOWEVENT) {   /* Set windowSurface again if window was resized */
 				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
 					windowSurface = SDL_GetWindowSurface(window);
-					SDL_GetWindowSize(window, &width, &height);
-					SDL_FreeSurface(drawingSurface);
-					drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
-					pixels = (Uint32*)drawingSurface->pixels;
+					SDL_GetWindowSize(window, &screen_width, &screen_height);
+					/*SDL_FreeSurface(drawingSurface);
+					drawingSurface = SDL_CreateRGBSurfaceWithFormat(0, screen_width, screen_height, 32, SDL_PIXELFORMAT_RGBA8888);
+					pixels = (Uint32*)drawingSurface->pixels;*/
 				}
 			}
 			else if (event.type == SDL_QUIT) {   /* Stop game loop if window was quited */
@@ -74,14 +85,15 @@ int main(int argc, char* argv[]) {
 		pixels = (Uint32*)(drawingSurface->pixels);
 		
 		// Drawing functions
-		//	(if ever draws incorrectly, the reason might be using width instead of pitch / bpp)
-		fill(pixels, width, height, blue);
-		drawSquare(pixels, width, height, 100, white);
+		//	(if ever draws incorrectly, the reason might be using width instead of pitch)
+		fill(pixels, draw_width, draw_height, blue);
+		drawSquare(pixels, draw_width, draw_height, 100, red);
 
 		SDL_UnlockSurface(drawingSurface);
 		/* Drawing end */
 
 		/* Swapping buffers */
+		//scaleSurface_old(drawingSurface, windowSurface, 1);
 		scaleSurface(drawingSurface, windowSurface, 0);
 		SDL_UpdateWindowSurface(window);
 	}

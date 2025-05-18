@@ -2,6 +2,7 @@
 
 void drawSquare(Uint32* pixels, int width, int height, int squareSize, Uint32 color)
 {
+	// can be optimized
 	for (int i = 0; i < squareSize; i++) {
 		int targetHeight = height / 2 - (squareSize/2) + i;
 		for (int j = 0; j < squareSize; j++) {
