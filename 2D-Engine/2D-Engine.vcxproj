@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="drawing.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="math.cpp" />
     <ClCompile Include="screen.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

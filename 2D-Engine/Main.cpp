@@ -10,14 +10,20 @@
 
 /*
    TODO:
-	- draw line function
 	- draw triangle function
 	- disable High DPI scaling (screen surface is 1536x864 not 1920x1080)
 	- optimize scaleSurface() function
    DONE:
+	- draw line function
 	- draw square function with position
 	- draw out of bounds safety
 */
+
+struct Point
+{
+	int x, y;
+	Point(int x, int y) : x(x), y(y) {};
+};
 
 /* Function declarations */
 void scaleSurface(SDL_Surface* source, SDL_Surface* destination, int ratio);
@@ -25,7 +31,11 @@ void scaleSurface(SDL_Surface* source, SDL_Surface* destination, int ratio);
 void fill(Uint32* pixels, int width, int height, Uint32 color);
 
 //void drawSquare_old(Uint32* pixels, int width, int height, int squareSize, Uint32 color);
-void drawSquare(Uint32* pixels, int width, int height, int squareSize, int squareX, int squareY, Uint32 color);
+void drawSquare(Uint32* pixels, int surfaceWidth, int surfaceHeight, int squareSize, int squareX, int squareY, Uint32 color);
+
+void drawLine(Uint32* pixels, int surfaceWidth, int surfaceHeight, Point vertexA, Point vertexB, Uint32 color);
+
+void drawTriangle(Uint32* pixels, int surfaceWidth, int surfaceHeight, Point vertexA, Point vertexB, Point vertexC, Uint32 color, int version);
 
 /* Main function */
 int main(int argc, char* argv[]) {
@@ -54,6 +64,9 @@ int main(int argc, char* argv[]) {
 	Uint32 red = SDL_MapRGB(drawingSurface->format, 255, 0, 0);
 	Uint32 green = SDL_MapRGB(drawingSurface->format, 0, 255, 0);
 	Uint32 blue = SDL_MapRGB(drawingSurface->format, 0, 0, 255);
+	Uint32 cyan = SDL_MapRGB(drawingSurface->format, 0, 255, 255);
+	Uint32 magenta = SDL_MapRGB(drawingSurface->format, 255, 0, 255);
+	Uint32 yellow = SDL_MapRGB(drawingSurface->format, 255, 255, 0);
 
 	/* Game loop */
 	while (running) {
@@ -90,6 +103,12 @@ int main(int argc, char* argv[]) {
 		fill(pixels, draw_width, draw_height, blue);
 		//drawSquare_old(pixels, draw_width, draw_height, 100, red);
 		drawSquare(pixels, draw_width, draw_height, 200, 400, 300, white);
+
+		drawLine(pixels, draw_width, draw_height, Point(100, 100), Point(300, 500), red);
+		drawLine(pixels, draw_width, draw_height, Point(100, 500), Point(300, 100), red);
+
+		//drawTriangle(pixels, draw_width, draw_height, Point(600, 100), Point(500, 500), Point(700, 500), green, 1);
+		drawTriangle(pixels, draw_width, draw_height, Point(-150, 550), Point(550, -50), Point(950, 650), green, 1);
 
 		SDL_UnlockSurface(drawingSurface);
 		/* Drawing end */
